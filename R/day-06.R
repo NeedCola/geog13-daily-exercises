@@ -18,7 +18,7 @@ covid %>%
 
 filter(covid, state %in% top_states) %>%
   group_by(state, date) %>%
-  summarise(cases = sum(cases)) %>%
+  summarise(cases = sum(cases, na.rm = TRUE)) %>%
   ungroup() %>%
   ggplot(aes(x = date, y = cases)) +
   geom_line(aes(color = state)) +
