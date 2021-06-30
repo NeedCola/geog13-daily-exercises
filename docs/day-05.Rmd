@@ -52,6 +52,7 @@ Use `dplyr` verbs to  create a data.frame of the **5** counties with the most cu
 covid %>%
   filter(date == max(date)) %>%
   arrange(-cases) %>%
+  select(county, state, cases) %>%
   slice(1:5)
 ```
 
@@ -65,9 +66,9 @@ Use `dplyr` verbs to create a data.frame of the **5** states with the _most_ cas
 covid %>%
   filter(date == max(date)) %>%
   group_by(state) %>%
-  summarise(date, cases) %>%
-  arrange(-cases) %>%
-  head(5)
+  summarise(cases = sum(cases, na.rm = TRUE)) %>%
+  ungroup() %>%
+  slice_max(cases, n = 5)
 ```
 
 ## Question 3: 
@@ -82,8 +83,7 @@ covid %>%
   filter(date == max(date), !cases == 0) %>%
   filter(!county %in% c("Unknown")) %>%
   mutate(ratio = 100 * (deaths/cases)) %>%
-  arrange(-ratio) %>%
-  head(5)
+  slice_max(ratio, n = 5)
 ```
 
 ## Question 4: 
@@ -96,10 +96,11 @@ Use the `dplyr` verbs to report the **5** states with the _worst_ current death/
 covid %>%
   filter(date == max(date), !cases == 0) %>%
   group_by(state) %>%
-  summarize(date, cases, deaths) %>%
-  mutate(ratio = 100 * (deaths/cases)) %>%
-  arrange(-ratio) %>%
-  head(5)
+  summarize(totCases = sum(cases),
+            totDeaths = sum(deaths),
+            ratio = 100 * (totDeaths/totCases)) %>%
+  ungroup() %>%
+  slice_max(ratio, n = 5)
 ```
 
 # END
