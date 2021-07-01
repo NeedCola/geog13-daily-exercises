@@ -11,9 +11,9 @@ region = data.frame(state_abbr = state.abb, region = state.region)
 
 covid = read_csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv')
 
-area = full_join(region, states, by = "state_abbr") %>%
-  select(state_abbr, region, state = state_name) %>%
-  na.omit()
+area = inner_join(region, states, by = "state_abbr") %>%
+  select(state_abbr, region, state = state_name)
+
 
 
 Regioncases = inner_join(covid, area, by = "state")%>%

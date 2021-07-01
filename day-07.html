@@ -199,9 +199,9 @@ covid = read_csv(&#39;https://raw.githubusercontent.com/nytimes/covid-19-data/ma
 ##   cases = col_double(),
 ##   deaths = col_double()
 ## )</code></pre>
-<pre class="r"><code>area = full_join(region, states, by = &quot;state_abbr&quot;) %&gt;%
-  select(state_abbr, region, state = state_name) %&gt;%
-  na.omit()
+<pre class="r"><code>area = inner_join(region, states, by = &quot;state_abbr&quot;) %&gt;%
+  select(state_abbr, region, state = state_name)
+  
   
 
 Regioncases = inner_join(covid, area, by = &quot;state&quot;)%&gt;%
