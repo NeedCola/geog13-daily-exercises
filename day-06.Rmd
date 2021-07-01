@@ -5,7 +5,7 @@
 ```{r}
 
 library(tidyverse)
-url = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties-recent.csv'
+url = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv'
 covid = read_csv(url)
 ```
 
@@ -28,11 +28,12 @@ filter(covid, state %in% top_states) %>%
   labs(title = "6 States with Most Cases: COVID-19 Pandemic",
        x = "Date",
        y = "Everyday Cases",
-       caption = "based on https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties-recent.csv",
+       caption = "based on https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv",
        subtitle = 'Data Source: Covid',
        color = "") +
   facet_wrap(~state) +
-  theme_gray() 
+  theme_gray() +
+  theme(axis.text.x = element_text(angle = 90))
 
 ggsave(file = "img/day-06-q1.png")
 ```
@@ -47,7 +48,7 @@ covid %>%
   labs(title = "National Cummulative Case Counts: COVID-19 Pandemic",
        x = "Date",
        y = "Everyday Cases",
-       caption = "based on https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties-recent.csv",
+       caption = "based on https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv",
        subtitle = 'Data Source: Covid',
        color = "") +
   theme_gray()
