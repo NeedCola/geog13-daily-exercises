@@ -20,14 +20,14 @@ l2 =st_distance(st_transform(cities, 5070))
 
 l3 = st_distance(st_transform(cities, eqds))
 
-units::set_units(l1, "km") 
-units::drop_units(l1)
+set_units(l1, "km") %>%
+  drop_units()
 
-units::set_units(l2, "km") 
-units::drop_units(l2)
+set_units(l2, "km") %>%
+  drop_units()
 
-units::set_units(l3, "km") 
-units::drop_units(l3)
+set_units(l3, "km") %>%
+  drop_units()
 
 ```
 
