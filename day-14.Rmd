@@ -30,7 +30,7 @@ point_in_polygon = function(points, polygon){
 plot_pip = function(data){
   ggplot() +
     geom_sf(data = data, aes(fill = log(n)), alpha = .9, size = .2) +
-    scale_fill_gradient(low = "white", high = "darkgreen") +
+    scale_fill_gradient(low = "white", high = "yellow") +
     theme_gray() +
     theme(legend.position = 'none',
           plot.title = element_text(face = "bold", color = "darkgreen", hjust = .5, size = 24)) +
