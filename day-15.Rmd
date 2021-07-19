@@ -1,0 +1,86 @@
+# Chi Zhang
+### 07/19/2021
+# Tesselations, Point-in-Polygon
+
+```{r}
+library(tidyverse)
+library(sf)
+library(USAboundaries)
+library(rmapshaper)
+library(readxl)
+library(leaflet)
+
+
+counties = USAboundaries::us_counties() %>%
+  filter(!state_name %in% c("Alaska", "Hawaii", "Puerto Rico")) %>%
+  st_transform(5070) 
+
+b_counties = counties %>%
+  group_by(state_name) %>%
+  summarise() 
+
+ 
+counties_cen = counties %>%
+  st_centroid() 
+
+ 
+  
+simp_count = counties %>% 
+  st_union() %>%
+  ms_simplify(keep = .025)
+
+ mapview::npts(counties)
+ mapview::npts(simp_count)
+
+```
+
+The number of points in the original object is 51976, and the number of points in the simplified object is 81, I removed 51895 points. It efficiently decreases the time of computation. 
+
+```{r}
+v_counties = counties_cen %>%
+  st_union() %>%
+  st_voronoi() %>%
+  st_cast() %>%
+  st_sf() %>%
+  mutate(id = 1:n()) %>%
+  st_intersection(simp_count) 
+
+t_counties = counties_cen %>%
+  st_union() %>%
+  st_triangulate() %>%
+  st_cast() %>%
+  st_sf() %>%
+  mutate(id = 1:n()) %>%
+  st_intersection(simp_count)
+
+sq_counties = counties %>%
+  st_make_grid(n = 70) %>%
+  st_sf() %>%
+  mutate(id = 1:n())
+
+
+h_counties = counties %>%
+  st_make_grid(n = 70, square = FALSE) %>%
+  st_sf() %>%
+  mutate(id = 1:n())
+
+
+
+counties_plot = function(tiles, name){
+  
+  ggplot() +
+  geom_sf(data = tiles, col = "navy", fill = "white", size = .2) +
+  theme_void() +
+  labs(title = name,
+       caption = paste("This Tesselation has:", nrow(tiles), "tiles")) +
+  theme(plot.title = element_text(hjust = .5, color = "navy", face = "bold"))
+}
+  
+counties_plot(v_counties, "Voronoi Coverage")
+counties_plot(t_counties, "Triangulation Coverage")
+counties_plot(sq_counties, "Square Coverage")
+counties_plot(h_counties, "Hexegonal Coverage")
+counties_plot(counties, "Original Data")
+
+```
+
