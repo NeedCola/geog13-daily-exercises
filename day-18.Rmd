@@ -1,0 +1,62 @@
+# Chi Zhang
+### 07/22/2021
+# Daily-exercise-18
+
+```{r}
+library(tidyverse)
+library(sf)
+library(readr)
+library(elevatr)
+library(raster)
+library(fasterize)
+
+goleta = readr::read_csv("data/uscities.csv") %>%
+  st_as_sf(coords = c("lng", "lat"), crs = 4326) %>%
+  st_transform(5070) %>%
+  filter(city == "Goleta") %>%
+  st_buffer(5000)
+
+bb = goleta %>%
+  st_bbox() %>%
+  st_as_sfc() %>%
+  st_as_sf() %>%
+  elevatr::get_elev_raster(z = 13) 
+
+ele = crop(bb, goleta)
+
+goleta_ele = plot(ele, main="Elevation of Goleta")
+writeRaster(ele, filename = "data/goleta_ele.tif", overwrite = TRUE)
+
+raster(ele)
+
+FUN = function(x) { ifelse(x <= 0, NA, 1)}
+
+
+ele2 = calc(ele, FUN)
+
+mask = bb *ele2
+
+
+#layer1 = plot(ele2, col = viridis::viridis(500), main="Mask") 
+#layer2 = plot(mask, col = viridis::viridis(500), main="elevation")
+
+
+quarts = cellStats(mask, fivenum)
+
+
+rcl = data.frame(min = seq(0,500,100), max = seq(10,600,100), lab = c(0:5))
+#rcl = data.frame(quarts[1:4], quarts[2:5], 1:4)
+
+r = reclassify(mask, rcl, lowerTRUE=TRUE) 
+#  plot(col = viridis::viridis(6), main="topo.bounds")
+
+s = stack(ele, ele2, mask, r) %>%
+  setNames(c("elevation", "land.mask", "terrain", "topography"))
+
+writeRaster(s, filename = "data/s.tif", overwrite = TRUE)
+
+plot(s, col = viridis::viridis(256))
+
+
+```
+
